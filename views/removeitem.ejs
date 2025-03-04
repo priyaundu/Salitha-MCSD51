@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("./partials/header.ejs") %>
+<body>
+    <header>
+        <a href="#"><img src="public/img/logo1.jpg" alt="company Logo" class="logo"></a>
+        <%- include('./partials/navprivate.ejs') %> 
+    </header>
+    <div class="container">
+        <div class="section2">
+            <%- include('./partials/menu.ejs') %>
+        </div>
+        <div class="section3">
+            <h2>Select the Product Model to Remove:</h2>
+
+            <form id="productForm" action="/submitremove" method="post">
+                <div>
+                    <label for="productType">Product Type:</label>
+                    <% if (proType && proType.length > 0) { %>
+                        <select name="productType" id="productType" onchange="loadBrands()">
+                            <% proType.forEach(product => { %>
+                                <option value="<%= product.type %>"><%= product.type %></option>
+                            <% }); %>
+                        </select>
+                    <% } %>
+                </div>
+                <br>
+                <div>
+                    <label for="brand">Product Brand:</label>
+                    <select name="brand" id="brand" onchange="loadModels()">
+                    </select>
+                </div>
+                <br>
+
+                <div>
+                    <label for="model">Product Model:</label>
+                    <select name="model" id="model">
+                    </select>
+                </div>
+                <br>
+                <button type="submit">Submit Model to Remove</button>
+            </form>
+            <% if (typeof success !== 'undefined') { %>
+                <br>
+                <h2><%= success %></h2>
+            <% } %>
+
+            <script>
+                function loadBrands() {
+                    const productType = document.getElementById('productType').value;
+                    fetch(`/getBrands/${productType}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const brandSelect = document.getElementById('brand');
+                            brandSelect.innerHTML = '';
+                            data.forEach(brand => {
+                                const option = document.createElement('option');
+                                option.value = brand;
+                                option.textContent = brand;
+                                brandSelect.appendChild(option);
+                            });
+                            loadModels(); // Load models for the first brand
+                        });
+                }
+        
+                function loadModels() {
+                const productType = document.getElementById('productType').value;
+                const brand = document.getElementById('brand').value;
+        
+                fetch(`/getModels/${productType}/${brand}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const modelSelect = document.getElementById('model');
+                        modelSelect.innerHTML = '';
+                        data.forEach(model => {
+                            const option = document.createElement('option');
+                            option.value = model;
+                            option.textContent = model;
+                            modelSelect.appendChild(option);
+                        });
+                    });
+                }
+        
+        
+                // Load brands and models on page load if product type is pre-selected
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (document.getElementById('productType').value) {
+                        loadBrands();
+                    }
+                });
+            </script>
+            
+</body>
+</html>

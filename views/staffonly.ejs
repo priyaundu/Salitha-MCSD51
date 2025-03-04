@@ -1,0 +1,35 @@
+<html lang="en">
+    <%- include("./partials/header.ejs")  %>
+<body>
+    <header>
+        <a href="#"><img src="public/img/logo1.jpg" alt="company Logo" class="logo"></a>
+        <%- include('./partials/navprivate.ejs') %> 
+    </header>
+    <div class="container">
+        <div class="section2">
+            <div>
+                <h2 style="color: maroon; text-align: right;">
+                    <% if (session) { %>        
+                        Welcome! <%= results[0].name %> <br>from  <%= results[0].team %> team.       
+                    <% }  %>  </h2>
+            </div>
+            <%- include('./partials/menu.ejs') %>
+        </div>
+        <div class="section3">
+            <h2>Customer Care and Trouble Ticket System</h2>
+            <h2>Key Features</h2>
+                <ul>
+                    <li>Add new customers with details.</li>
+                    <li>Add purchased products to a customer’s inventory.</li>
+                    <li>Generate customer inventory reports.</li>
+                    <li>Add new products with details Type.</li>
+                    <li>Remove product models that are no longer sold.</li>
+                    <li>Create trouble tickets for customer complaints.</li>
+                    <li>Close and Update trouble tickets with remarks.</li>
+                    <li>Generate reports for pending or resolved faults.</li>
+                </ul>
+        </div>
+    </div>
+    <%- include("./partials/footer.ejs")  %>
+</body>
+</html>

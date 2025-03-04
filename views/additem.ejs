@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("./partials/header.ejs") %>
+<body>
+    <header>
+        <a href="#"><img src="public/img/logo1.jpg" alt="company Logo" class="logo"></a>
+        <%- include('./partials/navprivate.ejs') %> 
+    </header>
+    <div class="container">
+        <div class="section2">
+            <%- include('./partials/menu.ejs') %>
+        </div>
+        <div class="section3">
+            <h2>Select the Product to add:</h2>
+
+            <form action="/addtoitems" method="post">
+                <label for="selection">Select Option:</label>
+                <select id="selection" name="selection">
+                    <option value="">--Select an option--</option>
+                    <option value="type">Type</option>
+                    <option value="brand">Brand</option>
+                    <option value="model">Model</option>
+                </select>
+
+                <div id="typeFields" style="display: none;">
+                    <ul>
+                        <li>
+                            <label for="type">Type:</label>
+                            <input type="text" id="type" name="type">
+                            <br><br>
+                        </li>
+                        <li>
+                            <label for="brand">Brand:</label>
+                            <input type="text" id="brand" name="brand">
+                            <br><br>
+                        </li>
+                        <li>
+                            <label for="model">Model:</label>
+                            <input type="text" id="model" name="model">
+                            <br><br>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="brandFields" style="display: none;">
+                    <ul>
+                        <li>
+                            <label for="brandType">Type:</label>
+                            <select id="brandType" name="brandType">
+                                <!-- Options for Type will be populated dynamically -->
+                            </select>
+                            <br><br>
+                        </li>
+                        <li>
+                            <label for="brandText">Brand:</label>
+                            <input type="text" id="brandText" name="brandText">
+                            <br><br>
+                        </li>
+                        <li>
+                            <label for="brandModelText">Model:</label>
+                            <input type="text" id="brandModelText" name="brandModelText">
+                            <br><br>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="modelFields" style="display: none;">
+                    <ul>
+                        <li>
+                            <label for="modelType">Type:</label>
+                            <select id="modelType" name="modelType">
+                                <!-- Options for Type will be populated dynamically -->
+                            </select>
+                            <br><br>
+                        </li>
+                        <li>
+                            <label for="modelBrand">Brand:</label>
+                            <select id="modelBrand" name="modelBrand">
+                                <!-- Options for Brand will be populated dynamically -->
+                            </select>
+                            <br><br>
+                        </li>
+                        <li>
+                            <label for="modelText">Model:</label>
+                            <input type="text" id="modelText" name="modelText">
+                        </li>
+                        <br><br>
+                    </ul>
+                </div>
+
+                <button type="submit">Submit</button>
+            </form>
+            <% if (typeof success !== 'undefined') { %>
+                <br>
+                <h2><%= success %></h2>
+            <% } %>
+        </div>
+    </div>
+    <%- include("./partials/footer.ejs") %>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const selection = document.getElementById('selection');
+            const typeFields = document.getElementById('typeFields');
+            const brandFields = document.getElementById('brandFields');
+            const modelFields = document.getElementById('modelFields');
+
+            const populateDropdown = (url, dropdownId) => {
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        const dropdown = document.getElementById(dropdownId);
+                        dropdown.innerHTML = '';
+                        if (data.length === 0) {
+                            const option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = 'No options available';
+                            dropdown.appendChild(option);
+                        } else {
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item;
+                                option.textContent = item;
+                                dropdown.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error populating dropdown:', error));
+            };
+
+            selection.addEventListener('change', function() {
+                typeFields.style.display = 'none';
+                brandFields.style.display = 'none';
+                modelFields.style.display = 'none';
+
+                if (this.value === 'type') {
+                    typeFields.style.display = 'block';
+                } else if (this.value === 'brand') {
+                    populateDropdown('/getmyTypes', 'brandType');
+                    brandFields.style.display = 'block';
+                } else if (this.value === 'model') {
+                    populateDropdown('/getmyTypes', 'modelType');
+                    populateDropdown('/getmyBrands', 'modelBrand');
+                    modelFields.style.display = 'block';
+                };
+            });
+        });
+    </script>
+</body>
+</html>

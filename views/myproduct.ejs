@@ -1,0 +1,23 @@
+<html lang="en">
+    <%- include("./partials/header.ejs")  %>
+<body>
+    <header>
+        <a href="#"><img src="public/img/logo1.jpg" alt="company Logo" class="logo"></a>
+        <%- include('./partials/navpublic.ejs') %>
+    </header>
+    <img src="public/img/partners.png" alt="partners" class="image center-image">
+    <div class="grid-container">
+            <% if (results) { %>
+                    <% results.forEach(product => { %>
+                        <div class="section">
+                            <h2><%= product.brand %></h2>
+                            <img src="public/img/logos/<%= product.logo %>" class="image center-image"> 
+                        </div>
+                        <br>
+                    <% }); %>
+                </select>
+            <% } %>
+    </div>
+    <%- include("./partials/footer.ejs")  %>
+</body>
+</html>
