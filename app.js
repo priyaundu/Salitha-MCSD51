@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
+const crypto = require('crypto');
 
 const app = express();
 const port = 3000; // Replace with your desired port
@@ -254,10 +255,10 @@ app.get('/profile', (req, res) => {
 
 app.post('/auth', (req, res) => {
   let username = req.body.username;
-  let password = req.body.password;
-  if (username && password) {
+  let encryptedPassword = req.body.encryptedPassword;
+  if (username && encryptedPassword) {
       let sql12 = 'SELECT * FROM users WHERE username = ? AND password = ?';
-      pool.query(sql12, [username,password], (error, results) => {
+      pool.query(sql12, [username,encryptedPassword], (error, results) => {
         if (error) throw error;
         if (results.length > 0) {
             req.session.loggedin = true;
@@ -281,12 +282,13 @@ app.post('/authnext',(req, res) => {
   let password2 = req.body.password2;
   if (password === password2) {
     if (email.includes('@abc.com')) {
-        let sql13 = 'INSERT INTO users (name, team, email, username, password) VALUES (?, ?, ?, ?, ?)'; 
-        pool.query(sql13, [name, team, email, username, password], (error, results) => {
-          if (error) throw error;
-          res.render('login', {name, name, success: 'Registered Successfully! Please Login', title: "Login"} );
-          res.end();
-        })
+      const hash = crypto.createHash('sha256').update(password).digest('hex');
+      let sql13 = 'INSERT INTO users (name, team, email, username, password) VALUES (?, ?, ?, ?, ?)'; 
+      pool.query(sql13, [name, team, email, username, hash], (error, results) => {
+        if (error) throw error;
+        res.render('login', {name, name, success: 'Registered Successfully! Please Login', title: "Login"} );
+        res.end();
+      })
     } else {
       res.send("eMail invalid! Please enter company eMail address ");
     }
